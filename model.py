@@ -258,15 +258,13 @@ class MLPPolicy(FFPolicy):
             x = F.tanh(x)
         else:
             x = self.acti(x)
-            x = F.tanh(x)
-
 
         x = self.v_fc2(x)
+
         if self.act_func == "tanh":
             x = F.tanh(x)
         else:
             x = self.acti(x)
-            x = F.tanh(x)
 
 
         x = self.v_fc3(x)
@@ -277,7 +275,6 @@ class MLPPolicy(FFPolicy):
             x = F.tanh(x)
         else:
             x = self.acti(x)
-            x = F.tanh(x)
 
         x = self.a_fc2(x)
         #print("IN",x.size())
@@ -285,7 +282,6 @@ class MLPPolicy(FFPolicy):
             x = F.tanh(x)
         else:
             x = self.acti(x)
-            x = F.tanh(x)
 
         #print("OUT",x.size())
         return value, x, states

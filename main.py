@@ -64,7 +64,7 @@ def main():
     extra = "_".join([ name[:4] for name in args.env_name ])+'_'+args.act_func
     if args.att:
         extra = 'att_'+extra
-
+    extra  = args.algo+'_'+extra
     # MODIFIED TO ACCEPT MULTI-TASK
     num_proc = args.num_processes // num_envs
     envs = [make_env(args.env_name[i//num_proc], args.seed, i, args.log_dir+extra+'/')
