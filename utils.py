@@ -139,8 +139,13 @@ def where(cond, x_1, x_2):
 
 def maxout(input, k=2):
     shape = input.size()
-    #print(input.size())
-    x = input.view(shape[0], k, shape[1]//k, shape[2], shape[3])
+    if len(shape) == 2:
+        #print("FULLY CONNECTED MAXOUT")
+        x = input.view(shape[0], k, shape[1]//k)
+    elif len(shape) == 3:
+        #print("CONVOLUTION MAXOUT")
+        x = input.view(shape[0], k, shape[1]//k, shape[2], shape[3])
+
     x, _ = torch.max(x, dim=1)
     #print(x.size())
     return x

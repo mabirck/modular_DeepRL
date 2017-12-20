@@ -89,7 +89,7 @@ def main():
     else:
         assert not args.recurrent_policy, \
             "Recurrent policy is not implemented for the MLP controller"
-        actor_critic = MLPPolicy(obs_shape[0], envs.action_space)
+        actor_critic = MLPPolicy(obs_shape[0], envs.action_space, args.act_func)
 
     if envs.action_space.__class__.__name__ == "Discrete":
         action_shape = 1

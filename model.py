@@ -192,16 +192,34 @@ def weights_init_mlp(m):
 
 
 class MLPPolicy(FFPolicy):
-    def __init__(self, num_inputs, action_space):
+    def __init__(self, num_inputs, action_space, act_func):
         super(MLPPolicy, self).__init__()
+
+        self.act_func = act_func
+        
+        ############## SETTING ACTIVATION FUNCTION STUFF ###################
+        if act_func == 'tanh':
+            C = 1
+            print(">> ||| USING tanh ACTIVATION FUNCTION ||| <<")
+        elif act_func == 'maxout':
+            C = 2
+            self.acti = maxout
+            print(">> ||| USING maxout ACTIVATION FUNCTION ||| <<")
+        elif act_func == 'lwta':
+            C = 1
+            print(">> ||| USING LWTA ACTIVATION FUNCTION ||| <<")
+
+
+        print(C)
+
 
         self.action_space = action_space
 
-        self.a_fc1 = nn.Linear(num_inputs, 64)
-        self.a_fc2 = nn.Linear(64, 64)
+        self.a_fc1 = nn.Linear(num_inputs, 64*C)
+        self.a_fc2 = nn.Linear(64, 64*C)
 
-        self.v_fc1 = nn.Linear(num_inputs, 64)
-        self.v_fc2 = nn.Linear(64, 64)
+        self.v_fc1 = nn.Linear(num_inputs, 64*C)
+        self.v_fc2 = nn.Linear(64, 64*C)
         self.v_fc3 = nn.Linear(64, 1)
 
         if action_space.__class__.__name__ == "Discrete":
@@ -236,18 +254,31 @@ class MLPPolicy(FFPolicy):
 
     def forward(self, inputs, states, masks):
         x = self.v_fc1(inputs)
-        x = F.tanh(x)
+        if self.act_func == "tanh":
+            x = F.tanh(x)
+        else:
+            x = self.acti(x)
 
         x = self.v_fc2(x)
-        x = F.tanh(x)
+        if self.act_func == "tanh":
+            x = F.tanh(x)
+        else:
+            x = self.acti(x)
 
         x = self.v_fc3(x)
         value = x
 
         x = self.a_fc1(inputs)
-        x = F.tanh(x)
+        if self.act_func == "tanh":
+            x = F.tanh(x)
+        else:
+            x = self.acti(x)
 
         x = self.a_fc2(x)
-        x = F.tanh(x)
-
+        #print("IN",x.size())
+        if self.act_func == "tanh":
+            x = F.tanh(x)
+        else:
+            x = self.acti(x)
+        #print("OUT",x.size())
         return value, x, states
