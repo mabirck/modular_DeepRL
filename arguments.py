@@ -62,7 +62,7 @@ def get_args():
     parser.add_argument('--no-vis', action='store_true', default=True,
                         help='disables visdom visualization')
 
-    parser.add_argument('--act_func', help='Activation Function', choices=['maxout', 'relu', 'lwta'], default='tanh')
+    parser.add_argument('--act_func', help='Activation Function', choices=['maxout', 'relu', 'lwta', 'tanh'], default='tanh')
 
     parser.add_argument('--load_model', default=None,
                         help='directory to save agent logs (default: None)')
