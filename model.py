@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from distributions import Categorical, DiagGaussian
-from utils import orthogonal, att, maxout
+from utils import orthogonal, att, maxout, lwta
 
 def weights_init(m):
     classname = m.__class__.__name__
@@ -36,7 +36,7 @@ class CNNPolicy(FFPolicy):
         super(CNNPolicy, self).__init__()
 
         self.act_func = act_func
-
+        self.acti = None
         ############## SETTING ACTIVATION FUNCTION STUFF ###################
         if act_func == 'relu':
             C = 1
@@ -47,6 +47,7 @@ class CNNPolicy(FFPolicy):
             print(">> ||| USING maxout ACTIVATION FUNCTION ||| <<")
         elif act_func == 'lwta':
             C = 1
+            self.acti = lwta
             print(">> ||| USING LWTA ACTIVATION FUNCTION ||| <<")
 
 
@@ -206,6 +207,7 @@ class MLPPolicy(FFPolicy):
             self.acti = maxout
             print(">> ||| USING maxout ACTIVATION FUNCTION ||| <<")
         elif act_func == 'lwta':
+            self.acti = lwta
             C = 1
             print(">> ||| USING LWTA ACTIVATION FUNCTION ||| <<")
 

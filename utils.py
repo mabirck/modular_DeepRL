@@ -139,13 +139,32 @@ def where(cond, x_1, x_2):
 
 def maxout(input, k=2):
     shape = input.size()
+    #print(shape)
     if len(shape) == 2:
         #print("FULLY CONNECTED MAXOUT")
         x = input.view(shape[0], k, shape[1]//k)
-    elif len(shape) == 3:
+    elif len(shape) == 3 or len(shape) == 4:
         #print("CONVOLUTION MAXOUT")
         x = input.view(shape[0], k, shape[1]//k, shape[2], shape[3])
 
-    x, _ = torch.max(x, dim=1)
-    #print(x.size())
+    x, x_ind = torch.max(x, dim=1)
+    #print(x)
     return x
+
+def lwta(input, k=2):
+    shape = input.size()
+    if len(shape) == 2:
+        #print("FULLY CONNECTED MAXOUT")
+        x = input.view(shape[0],k , shape[1]//k)
+    elif len(shape) == 3:
+        #print("CONVOLUTION MAXOUT")
+        x = input.view(shape[0], shape[1]//k, k, shape[2], shape[3])
+    print(x.size())
+    mask = torch.ones_like(x)
+    print(mask)
+
+    _, x_ind = torch.max(x, dim=1)
+    x_ind = torch.squeeze(x_ind)
+    for i in range(mask.size(1)):
+        mask[0, x_ind[i].data, i] =  1
+    print("FINAL MASK",mask)
