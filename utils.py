@@ -153,18 +153,40 @@ def maxout(input, k=2):
 
 def lwta(input, k=2):
     shape = input.size()
+    #print(shape)
+    x = input.clone()
     if len(shape) == 2:
         #print("FULLY CONNECTED MAXOUT")
-        x = input.view(shape[0],k , shape[1]//k)
-    elif len(shape) == 3:
+        x = x.view(shape[0], k, shape[1]//k)
+    elif len(shape) == 3 or len(shape) == 4:
         #print("CONVOLUTION MAXOUT")
-        x = input.view(shape[0], shape[1]//k, k, shape[2], shape[3])
-    print(x.size())
-    mask = torch.ones_like(x)
-    print(mask)
+        x = x.view(shape[0], k, shape[1]//k, shape[2], shape[3])
 
+    #print(x[0,1, 0], x[0,0, 0])
+    #print(x.size(), "BEFORE MAX")
     _, x_ind = torch.max(x, dim=1)
-    x_ind = torch.squeeze(x_ind)
-    for i in range(mask.size(1)):
-        mask[0, x_ind[i].data, i] =  1
-    print("FINAL MASK",mask)
+    #print(x_ind)
+    mask = torch.zeros(x.size())
+
+    mask = mask.view(shape[0], k, -1)
+    x_ind = x_ind.view(shape[0], -1)
+
+    #print(x_ind.size(), "INDEX SIZE")
+    #print(mask.size(), "MASK SIZE")
+
+
+    for i in range(x_ind.size(0)):
+        for ind in range(x_ind.size(1)):
+            mask[i, x_ind.data[i, ind], ind] = 1.0
+
+    #print(mask)
+    x = x.view(shape[0], k, -1)
+
+    #print(x.data[0,0, :5].numpy(), "BEFORE MAX")
+    #print(x.data[0,1, :5].numpy(), "BEFORE MAX")
+    x = x.data * mask
+    #print(x[0, 0,:5].numpy(), "AFTER MAX")
+    #print(x[0, 1,:5].numpy(), "AFTER MAX")
+
+    x = x.view(shape[0], shape[1], shape[2], shape[3])
+    return Variable(x)
