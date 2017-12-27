@@ -166,7 +166,8 @@ def lwta(input, k=2):
     #print(x.size(), "BEFORE MAX")
     _, x_ind = torch.max(x, dim=1)
     #print(x_ind)
-    mask = torch.zeros(x.size())
+    if torch.cuda.is_available():
+        mask = torch.zeros(x.size()).cuda()
 
     mask = mask.view(shape[0], k, -1)
     x_ind = x_ind.view(shape[0], -1)
