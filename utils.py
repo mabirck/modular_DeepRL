@@ -165,22 +165,36 @@ def lwta(input, k=2):
     #print(x[0,1, 0], x[0,0, 0])
     #print(x.size(), "BEFORE MAX")
     _, x_ind = torch.max(x, dim=1)
+
+    x_ind = x_ind.view(shape[0], -1)
     #print(x_ind)
+
     if torch.cuda.is_available():
         mask = torch.zeros(x.size()).cuda()
+        LEN = torch.arange(x_ind.size(1)).type(torch.LongTensor).cuda()
+    else:
+        mask = torch.zeros(x.size())
+        LEN = torch.arange(x_ind.size(1)).type(torch.LongTensor)
 
-    mask = mask.view(shape[0], k, -1)
-    x_ind = x_ind.view(shape[0], -1)
+    mask = mask.view(shape[0], -1)
+
+
 
     #print(x_ind.size(), "INDEX SIZE")
     #print(mask.size(), "MASK SIZE")
 
 
-    for i in range(x_ind.size(0)):
-        for ind in range(x_ind.size(1)):
-            mask[i, x_ind.data[i, ind], ind] = 1.0
+    x_ind *= x_ind.size(1)
+    x_ind.data.add_(LEN)
+    #print(x_ind.size())
+    mask.scatter_(1, x_ind.data, 1)
 
-    #print(mask)
+    # LAZY WAY
+    #for i in range(x_ind.size(0)):
+    #    for ind in range(x_ind.size(1)):
+    #        mask[i, x_ind.data[i, ind], ind] = 1.0
+
+    mask = mask.view(shape[0], k, -1)
     x = x.view(shape[0], k, -1)
 
     #print(x.data[0,0, :5].numpy(), "BEFORE MAX")
