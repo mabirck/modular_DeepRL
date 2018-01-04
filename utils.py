@@ -165,8 +165,6 @@ def lwta(input, k=2):
         #print("CONVOLUTION MAXOUT")
         x = x.view(shape[0], k, shape[1]//k, shape[2], shape[3])
 
-    #print(x[0,1, 0], x[0,0, 0])
-    #print(x.size(), "BEFORE MAX")
     _, x_ind = torch.max(x, dim=1)
 
     x_ind = x_ind.view(shape[0], -1)
@@ -180,9 +178,6 @@ def lwta(input, k=2):
         LEN = torch.arange(x_ind.size(1)).type(torch.LongTensor)
 
     mask = mask.view(shape[0], -1)
-
-
-
     #print(x_ind.size(), "INDEX SIZE")
     #print(mask.size(), "MASK SIZE")
 
@@ -205,6 +200,8 @@ def lwta(input, k=2):
     x = x.data * mask
     #print(x[0, 0,:5].numpy(), "AFTER MAX")
     #print(x[0, 1,:5].numpy(), "AFTER MAX")
-
-    x = x.view(shape[0], shape[1], shape[2], shape[3])
+    if len(shape) == 2:
+        x = x.view(shape[0], shape[1])
+    else:
+        x = x.view(shape[0], shape[1], shape[2], shape[3])
     return Variable(x)
