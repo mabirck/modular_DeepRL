@@ -146,8 +146,11 @@ def maxout(input, k=2):
     elif len(shape) == 3 or len(shape) == 4:
         #print("CONVOLUTION MAXOUT")
         x = input.view(shape[0], k, shape[1]//k, shape[2], shape[3])
-
+    #print('FIRST',x[0,0,:5].data.numpy())
+    #print('SECOND',x[0,1,:5].data.numpy())
     x, x_ind = torch.max(x, dim=1)
+    #print('FINAL',x[0,:5].data.numpy(),'\n___________________________\n_____________________')
+
     #print(x)
     return x
 
