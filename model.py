@@ -193,11 +193,12 @@ def weights_init_mlp(m):
 
 
 class MLPPolicy(FFPolicy):
-    def __init__(self, num_inputs, action_space, act_func, drop):
+    def __init__(self, num_inputs, action_space, act_func, drop, num_updates):
         super(MLPPolicy, self).__init__()
-        self.drop = torch.nn.Dropout(p=drop)
+        self.drop = drop
         self.act_func = act_func
-
+        self.num_updates = num_updates
+        self.counter = num_updates
         ############## SETTING ACTIVATION FUNCTION STUFF ###################
         if act_func == 'tanh':
             C = 1
@@ -255,6 +256,8 @@ class MLPPolicy(FFPolicy):
             self.dist.fc_mean.weight.data.mul_(0.01)
 
     def forward(self, inputs, states, masks):
+        decay = self.counter/self.num_updates
+        print("Decay is:", decay, "And drop is:", self.drop)
         x = self.v_fc1(inputs)
         if self.act_func == "tanh":
             x = F.tanh(x)
@@ -262,7 +265,7 @@ class MLPPolicy(FFPolicy):
             x = self.acti(x)
         #DROPOUT
         #print(x.data[0, :5].numpy(), "BEFORE DROP")
-        x = self.drop(x)
+        x = F.dropout(x, self.drop * decay)
         #print(x.data[0, :5].numpy(), "AFTER DROP")
 
         x = self.v_fc2(x)
@@ -272,7 +275,7 @@ class MLPPolicy(FFPolicy):
         else:
             x = self.acti(x)
         #DROPOUT
-        x = self.drop(x)
+        x = F.dropout(x, self.drop * decay)
 
 
         x = self.v_fc3(x)
@@ -284,7 +287,7 @@ class MLPPolicy(FFPolicy):
         else:
             x = self.acti(x)
         #DROPOUT
-        x = self.drop(x)
+        x = F.dropout(x, self.drop * decay)
 
         x = self.a_fc2(x)
         #print("IN",x.size())
@@ -293,7 +296,7 @@ class MLPPolicy(FFPolicy):
         else:
             x = self.acti(x)
         #DROPOUT
-        x = self.drop(x)
+        x = F.dropout(x, self.drop * decay)
 
         #print("OUT",x.size())
         return value, x, states

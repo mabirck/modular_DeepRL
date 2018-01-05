@@ -59,6 +59,8 @@ def get_args():
                         help='use a recurrent policy')
     parser.add_argument('--att', action='store_true', default=False,
                         help='Attention policy')
+    parser.add_argument('--anneal', action='store_true', default=False,
+                        help='Annealing Dropout policy')
     parser.add_argument('--no-vis', action='store_true', default=True,
                         help='disables visdom visualization')
     parser.add_argument('--drop', type=float, default=0.0,

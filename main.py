@@ -89,7 +89,7 @@ def main():
     else:
         assert not args.recurrent_policy, \
             "Recurrent policy is not implemented for the MLP controller"
-        actor_critic = MLPPolicy(obs_shape[0], envs.action_space, args.act_func, args.drop)
+        actor_critic = MLPPolicy(obs_shape[0], envs.action_space, args.act_func, args.drop, num_updates)
 
     if envs.action_space.__class__.__name__ == "Discrete":
         action_shape = 1
@@ -132,6 +132,8 @@ def main():
 
     start = time.time()
     for j in range(num_updates):
+        if args.anneal:
+            actor_critic.counter -=1
         for step in range(args.num_steps):
             # Sample actions
             value, action, action_log_prob, states = actor_critic.act(Variable(rollouts.observations[step], volatile=True),
