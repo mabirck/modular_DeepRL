@@ -5,10 +5,7 @@ import pandas
 import difflib
 ewma = pandas.stats.moments.ewma
 
-def compatibleMatrix(data):
-
-    minor = [len(d) for d in data]
-    minor = min(minor)
+def compatibleMatrix(data, minor):
     reshaped_data = np.array([d[:minor] for d in data])
     return reshaped_data
 
@@ -24,18 +21,18 @@ def workersLength(path, game):
     files = glob.glob(path+'*/*/*/*')
 
     for f in files:
+        print f
         total_length.append(getLength(f, 1))
-    print len(total_length)
-
-    return avgNestedLists(total_length)
+    return avgNestedLists(total_length, True)
 
 def fix_name(paths):
     return [(name.split('/')[-2]) for name in paths]
 
 def getMin(data):
-    mini = [x[-1] for x in data]
+    mini = [len(x)  for x in data]
     #print mini
-    return min(mini)
+    mini = min(mini)
+    return mini
 
 def plotData(data, length, game2plot, lines, colors, axis, from_where, L, C):
     #mini = getMin(length)
@@ -67,20 +64,24 @@ def getLength(path, key):
         #data = json.load(f)
         total = 0
         length = list()
+        prev = 0
         for k, line in enumerate(f):
             if k == 0 or k == 1:
                 continue
             #break
+
             elements = line.split(',')
-            prev = total
+            if float(elements[key]) < 0:
+                print("NEEEGAAATIVE")
             total+=float(elements[key])
-            if prev > total:
-                print "WRONG"
+            #if prev > total:
+            #    print("WRONG")
             length.append(total)
+            prev = total
+        #print np.array(length).shape
+        return length
 
-        return np.array(length)
-
-def avgNestedLists(nested_vals):
+def avgNestedLists(nested_vals, val=False):
     """
     Averages a 2-D array and returns a 1-D array of all of the columns
     averaged together, regardless of their dimensions.
@@ -95,13 +96,38 @@ def avgNestedLists(nested_vals):
         for lst in nested_vals: # Go through each list
             if index < len(lst): # If not an index error
                 temp.append(lst[index])
-        output.append(np.nanmean(temp))
+        if index !=0 and output[index-1] > np.nanmean(temp, axis=0) and val == True:
+            #print "WRONG", output[index-1], temp
+            aux = output[index-1] + 100
+            #output[index-1] = np.nanmean(temp, axis=0)
+            output.append(aux)
+        else:
+            output.append(np.nanmean(temp, axis=0))
     return output
+
 def smooth(y, box_pts):
     box = np.ones(box_pts)/box_pts
     y_smooth = np.convolve(y, box, mode='same')
     return y_smooth
 
+def check(data, length):
+    print(len(data), len(length))
+    print("### DATA STUFF ###", type(data))
+
+    for d in data:
+        print(d.shape)
+
+    print("### LENGTH STUFF ###", type(length))
+    print(length)
+    for l in length:
+        print(l.shape)
+        past = 0
+        for node in l:
+            if node < past:
+                pass
+                #print past, node
+                #print "wrong"
+            past = node
 def main():
     import argparse
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -116,32 +142,33 @@ def main():
     # joint_games =  ["Pong/Qbert", "DemonAttack/Qber", "DemonAttack/Pong"]
     #
     # all_paths = ["DemonAttack", "Pong", "Qbert"]
-    # labels = ['A3C', 'A3C_att', 'A3C_multitask', "A3C_multitask_att", "1step_att", "10step_att_5e5", "7_att_Demo_1e-5"]
+    # labels = ['A3C', 'A3C_multitask', 'A3C_multitask_maxout', 'A3C_multitask_lwta']
     # L = 3
     # C = 1
+
 
     # all_games =  ["Qbert"]
     # joint_games =  ["DemonAttack/Pong"]
     #
     # all_paths = ["Qbert"]
-    # labels = ['A3C', 'A3C_att', 'A3C_multitask', "A3C_multitask_att", "extra"]
+    # labels = ['A3C', 'A3C_multitask', 'A3C_multitask_maxout']
     # L = 1
     # C = 1
 
-
+    #
     # all_games =  ["DemonAttack"]
     # joint_games =  ["DemonAttack/Pong"]
     #
     # all_paths = ["DemonAttack"]
-    # labels = ['A3C', 'A3C_att', 'A3C_multitask', "A3C_multitask_att", "1step_att", "10step_att_5e5", "7_att_Demo_5e-5"]
+    # labels = ['A3C', 'A3C_multitask', 'A3C_multitask_maxout']
     # L = 1
     # C = 1
-
+    #
     # all_games =  ["Pong"]
     # joint_games =  ["DemonAttack/Pong"]
     #
     # all_paths = ["Pong"]
-    # labels = ['A3C', 'A3C_att', 'A3C_multitask', "A3C_multitask_att", "EXTRA"]
+    # labels = ['A3C', 'A3C_multitask', 'A3C_multitask_maxout']
     # L = 1
     # C = 1
 
@@ -172,13 +199,21 @@ def main():
     # C = 1
 
     ###################################### PPO #############################
-    all_games =  ["Humanoid"]
-    joint_games =  ["Matter?"]
+    # all_games =  ["Humanoid"]
+    # joint_games =  ["Matter?"]
+    #
+    # all_paths = ["Humanoid"]
+    # labels = ['PPO','PPO_maxout', 'PPO_multitask', "PPO_multitask_maxout"]
+    # L = 1
+    # C = 1
 
-    all_paths = ["Humanoid"]
-    labels = ['PPO_multitask', "PPO_multitask_maxout", "1step_att", "10step_att_5e5", "7_att_Demo_5e-5"]
-    L = 1
-    C = 1
+    # all_games =  ["Humanoid"]
+    # joint_games =  ["Matter?"]
+    #
+    # all_paths = ["Humanoid"]
+    # labels = ['PPO_multitask', "PPO_multitask_maxout"]
+    # L = 1
+    # C = 1
 
     # all_games =  ["HumanoidFlag"]
     # joint_games =  ["Matter?"]
@@ -188,32 +223,38 @@ def main():
     # L = 1
     # C = 1
 
-    # all_games =  ["HumanoidFlagHarder"]
-    # joint_games =  ["Matter?"]
-    #
-    # all_paths = ["HumanoidFlagHarder"]
-    # labels = ['PPO_multitask', "PPO_multitask_maxout", "1step_att", "10step_att_5e5", "7_att_Demo_5e-5"]
-    # L = 1
-    # C = 1
+    all_games =  ["Humanoid", "HumanoidFlag", "HumanoidFlagHarder"]
+    joint_games =  ["Matter?", "Matter?", "Matter?"]
+
+    all_paths = ["Humanoid", "HumanoidFlag", "HumanoidFlagHarder"]
+    labels = ['PPO_multitask', "PPO_multitask_maxout", "PPO_multitask_lwta"]
+    L = 3
+    C = 1
+
+
 
     colors = ["black", "gray", "blue", "red"]
     lines = [':', '-.', '--', '-']
     fig = plt.figure()
     for axis, (current, game2plot) in enumerate(zip(all_paths, all_games)):
-        print current
+        print(current)
         paths = glob.glob("./data/{}/".format(current+'/*/'))
         paths = sorted(paths)
         data = list()
         length = list()
         log_dir = args.log_dir.split('/')[0]
         for game in paths:
-            print game
-            data.append(smooth(np.array(workersMeanReward(game, game2plot+args.env)), 20))
+            print(game)
+            data.append(ewma(np.array(workersMeanReward(game, game2plot+args.env)), 15))
             length.append(np.array(workersLength(game, game2plot+args.env)))
-
+        check(data, length)
         plotData(data, length, game2plot, lines, colors, axis+1, joint_games[axis], L, C)
+    from matplotlib.font_manager import FontProperties
 
-    plt.legend(labels, loc='best',  shadow=True, ncol=8)
+    fontP = FontProperties()
+    fontP.set_size('small')
+    #plt.legend(labels, loc='bottom',  shadow=True, ncol=8, prop=fontP, bbox_to_anchor=(0.5, -0.3))
+    plt.legend(labels, loc='best')
 
     plt.tight_layout()
     fig.savefig("all"+'.pdf')

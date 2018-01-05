@@ -85,11 +85,11 @@ def main():
         actor_critic, ob_rms = \
                     torch.load(args.load_model)
     elif len(envs.observation_space.shape) == 3:
-        actor_critic = CNNPolicy(obs_shape[0], envs.action_space, args.recurrent_policy, args.act_func)
+        actor_critic = CNNPolicy(obs_shape[0], envs.action_space, args.recurrent_policy, args.act_func. args.drop)
     else:
         assert not args.recurrent_policy, \
             "Recurrent policy is not implemented for the MLP controller"
-        actor_critic = MLPPolicy(obs_shape[0], envs.action_space, args.act_func)
+        actor_critic = MLPPolicy(obs_shape[0], envs.action_space, args.act_func, args.drop)
 
     if envs.action_space.__class__.__name__ == "Discrete":
         action_shape = 1

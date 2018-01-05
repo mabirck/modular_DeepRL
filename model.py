@@ -193,9 +193,9 @@ def weights_init_mlp(m):
 
 
 class MLPPolicy(FFPolicy):
-    def __init__(self, num_inputs, action_space, act_func):
+    def __init__(self, num_inputs, action_space, act_func, drop):
         super(MLPPolicy, self).__init__()
-
+        self.drop = torch.nn.Dropout(p=drop)
         self.act_func = act_func
 
         ############## SETTING ACTIVATION FUNCTION STUFF ###################
@@ -260,6 +260,10 @@ class MLPPolicy(FFPolicy):
             x = F.tanh(x)
         else:
             x = self.acti(x)
+        #DROPOUT
+        #print(x.data[0, :5].numpy(), "BEFORE DROP")
+        x = self.drop(x)
+        #print(x.data[0, :5].numpy(), "AFTER DROP")
 
         x = self.v_fc2(x)
 
@@ -267,6 +271,8 @@ class MLPPolicy(FFPolicy):
             x = F.tanh(x)
         else:
             x = self.acti(x)
+        #DROPOUT
+        x = self.drop(x)
 
 
         x = self.v_fc3(x)
@@ -277,6 +283,8 @@ class MLPPolicy(FFPolicy):
             x = F.tanh(x)
         else:
             x = self.acti(x)
+        #DROPOUT
+        x = self.drop(x)
 
         x = self.a_fc2(x)
         #print("IN",x.size())
@@ -284,6 +292,8 @@ class MLPPolicy(FFPolicy):
             x = F.tanh(x)
         else:
             x = self.acti(x)
+        #DROPOUT
+        x = self.drop(x)
 
         #print("OUT",x.size())
         return value, x, states
