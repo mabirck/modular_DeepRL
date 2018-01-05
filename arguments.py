@@ -68,7 +68,7 @@ def get_args():
     parser.add_argument('--drop', type=float, default=0.0,
                         help='drop (default: 0.0)')
 
-    parser.add_argument('--act_func', help='Activation Function', choices=['maxout', 'relu', 'lwta', 'tanh'], default='relu')
+    parser.add_argument('--act_func', help='Activation Function', choices=['maxout', 'relu', 'lwta', 'tanh'], default='tanh')
 
     parser.add_argument('--load_model', default=None,
                         help='directory to save agent logs (default: None)')

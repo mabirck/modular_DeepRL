@@ -211,7 +211,10 @@ class MLPPolicy(FFPolicy):
             self.acti = lwta
             C = 1
             print(">> ||| USING LWTA ACTIVATION FUNCTION ||| <<")
-
+        elif act_func == 'relu':
+            self.acti  = F.relu
+            C = 1
+            print(">> ||| USING RELU ACTIVATION FUNCTION ||| <<")
 
         print(C)
 
