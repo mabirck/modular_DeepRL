@@ -256,7 +256,10 @@ class MLPPolicy(FFPolicy):
             self.dist.fc_mean.weight.data.mul_(0.01)
 
     def forward(self, inputs, states, masks):
-        decay = self.counter/self.num_updates
+        if self.counter < 0:
+            decay = 0
+        else:
+            decay = self.counter/self.num_updates
         #print("Decay is:", decay, "And drop is:", self.drop)
         x = self.v_fc1(inputs)
         if self.act_func == "tanh":
