@@ -1,6 +1,6 @@
 import os
 
-import gym
+import gym, roboschool
 from gym.spaces.box import Box
 
 from baselines import bench

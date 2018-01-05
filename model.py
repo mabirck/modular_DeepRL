@@ -257,7 +257,7 @@ class MLPPolicy(FFPolicy):
 
     def forward(self, inputs, states, masks):
         decay = self.counter/self.num_updates
-        print("Decay is:", decay, "And drop is:", self.drop)
+        #print("Decay is:", decay, "And drop is:", self.drop)
         x = self.v_fc1(inputs)
         if self.act_func == "tanh":
             x = F.tanh(x)
