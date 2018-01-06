@@ -69,7 +69,7 @@ def evaluate(env_name, act_func, seed, k):
             if (p.getBodyInfo(i)[0].decode() == "torso"):
                 torsoId = i
 
-    for i in range(20000):
+    for i in range(5000):
         value, action, _, states = actor_critic.act(Variable(current_obs, volatile=True),
                                                     Variable(states, volatile=True),
                                                     Variable(masks, volatile=True),
