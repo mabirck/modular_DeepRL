@@ -75,12 +75,12 @@ def main():
             viz = Visdom()
             win = None
 
-        extra  = args.algo+'_'
+        extra  = args.algo+'_'+args.act_func+'_'
 
 
         print("STARTING TRAINING OF -> ",ev)
         num_proc = args.num_processes
-        envs = [make_env(ev, args.seed, k, args.log_dir+extra+'/')]
+        envs = [make_env(ev, args.seed, k, args.log_dir+'/'+extra)]
 
         if args.num_processes > 1:
             print(args.num_processes, "shit")
@@ -304,7 +304,7 @@ def main():
 
             # EVALUATE IN BETWEEN THE UPDATES
             for nxt in current_games:
-                evaluate(nxt, args.act_func, args.seed, k)
+                evaluate(actor_critic, envs.ob_rms, nxt, args.act_func, args.seed, k)
 
 
 if __name__ == "__main__":

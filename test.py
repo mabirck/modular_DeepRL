@@ -10,7 +10,7 @@ from baselines.common.vec_env.vec_normalize import VecNormalize
 from envs import make_env
 from utils import process_file
 
-def evaluate(env_name, act_func, seed, k):
+def evaluate(actor_critic, ob_rms, env_name, act_func, seed, k):
 
     num_stack=1
     log_interval = 1
@@ -22,8 +22,8 @@ def evaluate(env_name, act_func, seed, k):
     env = DummyVecEnv([env])
 
 
-    actor_critic, ob_rms = \
-                torch.load(os.path.join(load_dir, 'ppo_'+env_name+'_'+act_func+ '_'+str(seed)+".pt"))
+    #actor_critic, ob_rms = \
+    #            torch.load(os.path.join(load_dir, 'ppo_'+env_name+'_'+act_func+ '_'+str(seed)+".pt"))
 
 
     if len(env.observation_space.shape) == 1:
