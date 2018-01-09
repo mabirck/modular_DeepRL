@@ -15,10 +15,10 @@ def evaluate(env_name, act_func, seed, k):
     num_stack=1
     log_interval = 1
     load_dir='./trained_models/ppo/'
-    sd = np.random.randint(1000, size=1)
+    #sd = np.random.randint(1000, size=1)
+    sd =[1]
 
-
-    env = make_env(env_name, int(sd[0]), 0, './tmp/test/'+act_func+'_')
+    env = make_env(env_name, int(sd[0]), 0, './tmp/test/'+str(seed)+'_'+act_func+'_')
     env = DummyVecEnv([env])
 
 

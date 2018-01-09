@@ -209,9 +209,9 @@ def lwta(input, k=2):
     return Variable(x)
 
 def process_file(env_name, act_func, seed, train_seed, k):
-    rewards =  getData('./tmp/test/'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 0)
-    length =  getData('./tmp/test/'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 1)
-    time =  getData('./tmp/test/'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 2)
+    rewards =  getData('./tmp/test/'+str(train_seed)+'_'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 0)
+    length =  getData('./tmp/test/'+str(train_seed)+'_'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 1)
+    time =  getData('./tmp/test/'+str(train_seed)+'_'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 2)
 
     shape = rewards.shape[0]
     rewards = np.sum(rewards)
@@ -234,7 +234,7 @@ def process_file(env_name, act_func, seed, train_seed, k):
         writer = csv.writer(f)
         writer.writerow(ls)
 
-    shutil.rmtree('./tmp/test/'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed))
+    shutil.rmtree('./tmp/test/'+str(train_seed)+'_'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed))
 
 def getData(path, key):
     with open(path, 'r') as f:

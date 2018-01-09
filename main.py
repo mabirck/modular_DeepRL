@@ -34,7 +34,7 @@ num_envs = len(args.env_name)
 print("GONNA TRAIN", num_envs, "GAMES!")
 
 
-num_updates = int(args.num_frames) * num_envs // args.num_steps // args.num_processes
+num_updates = int(args.num_frames)  // args.num_steps // args.num_processes
 print("DURING", num_updates, "STEPS!")
 
 torch.manual_seed(args.seed)
