@@ -48,6 +48,10 @@ def evaluate(actor_critic, ob_rms, env_name, act_func, seed, k):
     states = torch.zeros(1, actor_critic.state_size)
     masks = torch.zeros(1, 1)
 
+    if torch.cuda.is_available():
+        current_obs = current_obs.cuda()
+        states = states.cuda()
+        masks = masks.cuda()
 
     def update_current_obs(obs):
         shape_dim0 = env.observation_space.shape[0]
