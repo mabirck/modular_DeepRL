@@ -282,7 +282,7 @@ def main():
                 save_model = [save_model,
                                 hasattr(envs, 'ob_rms') and envs.ob_rms or None]
                 print("SAVING", ev)
-                torch.save(save_model, os.path.join(save_path, extra+ ev +'_'+args.act_func+'_'+str(args.seed)+ ".pt"))
+                torch.save(save_model, os.path.join(save_path, args.algo+'_'+ ev +'_'+args.act_func+'_'+str(args.seed)+ ".pt"))
 
             if j % args.log_interval == 0:
                 end = time.time()
