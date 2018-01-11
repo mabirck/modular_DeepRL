@@ -3,6 +3,10 @@ import torch.nn as nn
 import math
 from torch.autograd import Variable
 import torch.nn.functional as F
+import numpy as np
+import os
+import csv
+import shutil
 
 # Necessary for my KFAC implementation.
 class AddBias(nn.Module):
@@ -205,3 +209,44 @@ def lwta(input, k=2):
     else:
         x = x.view(shape[0], shape[1], shape[2], shape[3])
     return Variable(x)
+
+def process_file(env_name, act_func, seed, train_seed, extra):
+    rewards =  getData('./tmp/test/'+str(train_seed)+'_'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 0)
+    length =  getData('./tmp/test/'+str(train_seed)+'_'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 1)
+    time =  getData('./tmp/test/'+str(train_seed)+'_'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed)+'/'+env_name+'/0.monitor.csv', 2)
+
+    shape = rewards.shape[0]
+    rewards = np.sum(rewards)
+    length = np.sum(length)
+    time = np.sum(time)
+    print("TEST DATA -> avg_reward: ", rewards/shape, "avg_length: ", length/shape, "time: ", time)
+    ls = [shape, rewards, length, time, rewards/shape]
+
+    path = './tmp/final_test/'+extra
+
+    ##   initialize header  ##
+    if not os.path.isfile(path):
+        with open(path, 'a') as f:
+            writer = csv.writer(f)
+            writer.writerow(["SHAPE", "R_S", "L_S", "T_S", "AVG_R", "CURRENT_ID"])
+    #elif continual = True:
+
+
+    with open(path, 'a') as f:
+        writer = csv.writer(f)
+        writer.writerow(ls)
+
+    shutil.rmtree('./tmp/test/'+str(train_seed)+'_'+act_func+'_'+env_name+'/'+env_name+'_'+str(seed))
+
+def getData(path, key):
+    with open(path, 'r') as f:
+        #data = json.load(f)
+        total = 0
+        rewards = list()
+        for k, line in enumerate(f):
+            if k == 0 or k == 1:
+                continue
+            #break
+            elements = line.split(',')
+            rewards.append(float(elements[key]))
+    return np.array(rewards)

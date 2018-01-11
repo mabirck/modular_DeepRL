@@ -20,6 +20,7 @@ from kfac import KFACOptimizer
 from model import CNNPolicy, MLPPolicy
 from storage import RolloutStorage
 from visualize import visdom_plot
+from test import evaluate
 
 args = get_args()
 
@@ -64,8 +65,10 @@ def main():
     extra = "_".join([ name[:4] for name in args.env_name ])+'_'+args.act_func
     if args.att:
         extra = 'att_'+extra
-    extra  = args.algo+'_'+extra
+    extra += '_'+ '_'.join(['anneal', str(args.annealing_factor), 'drop', str(args.drop)])
+    extra  = str(args.seed)+'_'+args.algo+'_'+extra
     # MODIFIED TO ACCEPT MULTI-TASK
+    print(args.log_dir+extra)
     num_proc = args.num_processes // num_envs
     envs = [make_env(args.env_name[i//num_proc], args.seed, i, args.log_dir+extra+'/')
                 for i in range(args.num_processes)]
@@ -260,10 +263,7 @@ def main():
             save_model = [save_model,
                             hasattr(envs, 'ob_rms') and envs.ob_rms or None]
 
-            if args.att:
-                extra = 'att'
-            else:
-                extra = ''
+
             torch.save(save_model, os.path.join(save_path, extra+"_".join(args.env_name)+'_'+args.act_func+'_'+str(args.seed)+ ".pt"))
 
         if j % args.log_interval == 0:
@@ -283,6 +283,8 @@ def main():
                 win = visdom_plot(viz, win, args.log_dir, args.env_name, args.algo)
             except IOError:
                 pass
+        for nxt in args.env_name:
+            evaluate(actor_critic, envs.ob_rms, nxt, args.act_func, args.seed, extra)
 
 if __name__ == "__main__":
     main()
