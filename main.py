@@ -283,8 +283,9 @@ def main():
                 win = visdom_plot(viz, win, args.log_dir, args.env_name, args.algo)
             except IOError:
                 pass
-        for nxt in args.env_name:
-            evaluate(actor_critic, envs.ob_rms, nxt, args.act_func, args.seed, extra)
+        if args.eval:
+            for nxt in args.env_name:
+                evaluate(actor_critic, envs.ob_rms, nxt, args.act_func, args.seed, extra)
 
 if __name__ == "__main__":
     main()

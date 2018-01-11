@@ -61,12 +61,14 @@ def get_args():
                         help='Attention policy')
     parser.add_argument('--anneal', action='store_true', default=False,
                         help='Annealing Dropout policy')
-    parser.add_argument('--annealing_factor', type=float, default=0.2,
+    parser.add_argument('--annealing_factor', type=float, default=0.001,
                         help='Annealing factor for dropout (default: 0.2)')
     parser.add_argument('--no-vis', action='store_true', default=True,
                         help='disables visdom visualization')
     parser.add_argument('--drop', type=float, default=0.0,
                         help='drop (default: 0.0)')
+    parser.add_argument('--eval', action='store_true', default=False,
+                        help='Enable eval pass')
 
     parser.add_argument('--act_func', help='Activation Function', choices=['maxout', 'relu', 'lwta', 'tanh'], default='tanh')
 
